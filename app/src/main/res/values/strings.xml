@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Iron Club</string>
+    <string name="weight">Weight</string>
+    <string name="reps">Reps</string>
+    <string name="more_options">More options</string>
+    <string name="auto_fx">Auto-f(x)</string>
+    <string name="formula">Formula</string>
+    <string name="unit">Unit</string>
+    <string name="less_reliable_results">From %1$d reps the results are less reliable</string>
+    <string name="percent_and_weight" translatable="false">%1$s - %2$s</string>
+</resources>
