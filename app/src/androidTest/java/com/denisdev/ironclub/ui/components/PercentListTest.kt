@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.denisdev.ironclub.Utils.formatRound
 import com.denisdev.ironclub.assertContains
 import com.denisdev.ironclub.base.AppTheme
 import com.denisdev.ironclub.rmCalculator.PercentList
@@ -18,13 +19,13 @@ import org.junit.runner.RunWith
 class PercentListTest {
     @get:Rule
     val composeTestRule = createComposeRule()
-    private val rm = 100f
+    private val rm = 180f
     private val list = listOf(
         getPercentList(rm, 40..95, 5),
         getPercentList(rm, 10..35, 5),
         getPercentList(rm, 1..5, 1),
     ).flatten()
-        .toMutableList().also { it.add("0.5%" to "0.5") }
+        .toMutableList().also { it.add("0.5%" to ((180f*0.5f)/100f).formatRound()) }
         .map {
         "${it.first} - ${it.second}"
     }

@@ -13,7 +13,12 @@ class RmCalculatorViewModel(
     fun getRm(params: GetRM.Params) {
         viewModelScope.launch {
             val result = rmUseCase.execute(params)
-            if (result.isFailure) return@launch
+
+            if (result.isFailure) {
+                uiState.defaultState()
+                return@launch
+            }
+
             uiState.update { uiData ->
                 uiData.copy(
                     rm = result.getOrThrow().weight.value,

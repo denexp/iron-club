@@ -52,13 +52,12 @@ import com.denisdev.domain.model.units.WeightUnit
 import com.denisdev.domain.usecases.rmcalculator.GetRM
 import com.denisdev.domain.usecases.rmcalculator.GetRM.Companion.CONSISTENT_RESULT_LIMIT
 import com.denisdev.ironclub.R
-import com.denisdev.ironclub.Utils.round
+import com.denisdev.ironclub.Utils.formatRound
 import com.denisdev.ironclub.base.AppTheme
 import com.denisdev.ironclub.base.BaseActivity
 import com.denisdev.ironclub.components.DropDown
 import com.denisdev.ironclub.components.asResource
 import com.denisdev.ironclub.components.take
-import com.denisdev.ironclub.rmCalculator.RmCalculatorActivity.Companion.WEIGHT_FORMAT
 import com.denisdev.ironclub.rmCalculator.RmUiData.Companion.DEFAULT_AUTHOR
 import com.denisdev.ironclub.rmCalculator.RmUiData.Companion.DEFAULT_WEIGHT_UNIT
 
@@ -74,9 +73,6 @@ class RmCalculatorActivity : BaseActivity() {
         }
     }
 
-    companion object {
-        const val WEIGHT_FORMAT = "#.##"
-    }
 }
 
 @Preview(device = "spec:width=411dp,height=891dp", showSystemUi = true)
@@ -110,7 +106,7 @@ fun RMCalculatorView(viewModel: RmCalculatorViewModel = viewModel<RmCalculatorVi
                 .weight(1f)
                 .verticalScroll(rememberScrollState())) {
             Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Text(text = data.rm.round(WEIGHT_FORMAT), style = TextStyle(fontSize = 70.sp, fontWeight = FontWeight.Bold),
+                Text(text = data.rm.formatRound(), style = TextStyle(fontSize = 70.sp, fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.testTag("RM"))
                 Text(text = weightUnit.name, style = TextStyle(fontSize = 30.sp),
                     color = MaterialTheme.colorScheme.onBackground)
@@ -143,14 +139,14 @@ fun PercentList(rm: Float) {
         Column {
             GeneratePercents(rm, 10..35, 5)
             GeneratePercents(rm, 1..5, 1)
-            PercentItem("0.5%", ((rm * 0.5f) / 100).toString())
+            PercentItem("0.5%", ((rm * 0.5f) / 100).formatRound())
         }
     }
 }
 
 fun getPercentList(rm: Float, range: IntRange, chunk: Int) =  (range).reversed().chunked(chunk).mapNotNull { it.firstOrNull() }
     .map { i ->
-        ("$i   %".takeIf { i < 10 } ?: "$i %") to ((rm * i) / 100).round(WEIGHT_FORMAT)
+        ("$i   %".takeIf { i < 10 } ?: "$i %") to ((rm * i) / 100).formatRound()
     }
 
 @Composable
@@ -212,7 +208,7 @@ private fun InputFormSection(modifier: Modifier = Modifier,
                 }
             )
         }
-        if ((reps.first.toIntOrNull() ?: 0) > CONSISTENT_RESULT_LIMIT)//${CONSISTENT_RESULT_LIMIT + 1}
+        if ((reps.first.toIntOrNull() ?: 0) > CONSISTENT_RESULT_LIMIT)
             Text(modifier = Modifier.fillMaxWidth(),
                 text = R.string.less_reliable_results.asResource(CONSISTENT_RESULT_LIMIT + 1),
                 style = TextStyle(fontSize = 14.sp),

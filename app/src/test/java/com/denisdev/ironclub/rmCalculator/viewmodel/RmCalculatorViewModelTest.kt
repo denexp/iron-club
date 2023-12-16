@@ -31,7 +31,7 @@ class RmCalculatorViewModelTest: BaseViewModelTest() {
     fun getRmSuccess() {
         val params = GetRM.Params("100", "8", Author.Brzycki, WeightUnit.Kg, false)
 
-        runTest { sut.getRm(params) }
+        sut.getRm(params)
 
         verify { uiState.update(any()) }
     }
@@ -39,8 +39,8 @@ class RmCalculatorViewModelTest: BaseViewModelTest() {
     fun getRmFailure() {
         val params = GetRM.Params("100---", "8---", Author.MCGlothin, WeightUnit.Kg, true)
 
-        runTest { sut.getRm(params) }
+        sut.getRm(params)
 
-        verify(exactly = 0) { uiState.update(any()) }
+        verify { uiState.defaultState() }
     }
 }
