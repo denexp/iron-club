@@ -33,6 +33,8 @@ dependencies {
     implementation(project(":domain"))
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    implementation(libs.coroutines)
+    testImplementation(libs.testCoroutines)
     androidTestImplementation(libs.testCoroutines)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.junit.ktx)

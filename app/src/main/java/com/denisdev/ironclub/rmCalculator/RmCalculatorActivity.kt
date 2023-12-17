@@ -85,15 +85,14 @@ fun RMCalculatorPreview() {
 
 @Composable
 fun RMCalculatorView(viewModel: RmCalculatorViewModel = viewModel<RmCalculatorViewModel>()) {
-    val data by viewModel.uiState.data.collectAsState()
-
     val (weight, onWeight) = rememberSaveable { mutableStateOf("") }
     val (reps, onReps) = rememberSaveable { mutableStateOf("") }
     val (weightUnit, onUnit) = rememberSaveable { mutableStateOf(DEFAULT_WEIGHT_UNIT) }
     val (author, onAuthor) = rememberSaveable { mutableStateOf(DEFAULT_AUTHOR) }
     val (autoFx, onAutoFx) = rememberSaveable { mutableStateOf(true) }
 
-    viewModel.getRm(GetRM.Params(weight, reps, author, weightUnit, autoFx))
+    val data by viewModel.data(GetRM.Params(weight, reps, author, weightUnit, autoFx)).collectAsState()
+
     if (autoFx)
         onAuthor(data.author)
 
@@ -180,31 +179,39 @@ private fun InputFormSection(modifier: Modifier = Modifier,
         Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
             OutlinedTextField(value = weight.first, label = {
                 Text(text = R.string.weight.asResource(), style = TextStyle(fontSize = 20.sp))
-            }, onValueChange = weight.second, modifier = Modifier.weight(0.6f).testTag("WeightTextField"),
+            }, onValueChange = weight.second, modifier = Modifier
+                .weight(0.6f)
+                .testTag("WeightTextField"),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
                 ),
                 singleLine = true,
                 trailingIcon = weight.first.isNotEmpty().take {
-                    Icon(Icons.Rounded.Clear, null, modifier = Modifier.clickable {
-                        weight.second(String())
-                    }.testTag("WeightClearButton"))
+                    Icon(Icons.Rounded.Clear, null, modifier = Modifier
+                        .clickable {
+                            weight.second(String())
+                        }
+                        .testTag("WeightClearButton"))
                 }
             )
             OutlinedTextField(value = reps.first, label = {
                 Text(text = R.string.reps.asResource(), style = TextStyle(fontSize = 20.sp),
                     overflow = TextOverflow.Ellipsis, maxLines = 1)
-            }, onValueChange = reps.second, modifier = Modifier.weight(0.4f).testTag("RepsTextField"),
+            }, onValueChange = reps.second, modifier = Modifier
+                .weight(0.4f)
+                .testTag("RepsTextField"),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 ),
                 singleLine = true,
                 trailingIcon = reps.first.isNotEmpty().take {
-                    Icon(Icons.Rounded.Clear, null, modifier = Modifier.clickable {
-                        reps.second(String())
-                    }.testTag("RepsClearButton"))
+                    Icon(Icons.Rounded.Clear, null, modifier = Modifier
+                        .clickable {
+                            reps.second(String())
+                        }
+                        .testTag("RepsClearButton"))
                 }
             )
         }

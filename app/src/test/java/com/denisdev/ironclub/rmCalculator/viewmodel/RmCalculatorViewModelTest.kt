@@ -3,44 +3,44 @@ package com.denisdev.ironclub.rmCalculator.viewmodel
 import com.denisdev.domain.model.rm.author.Author
 import com.denisdev.domain.model.units.WeightUnit
 import com.denisdev.domain.usecases.rmcalculator.GetRM
-import com.denisdev.ironclub.base.UiState
 import com.denisdev.ironclub.rmCalculator.RmCalculatorViewModel
 import com.denisdev.ironclub.rmCalculator.RmUiData
 import com.denisdev.ironclub.rmCalculator.base.BaseViewModelTest
-import io.mockk.spyk
-import io.mockk.verify
+import com.denisdev.ironclub.rmCalculator.viewmodel.fakeRepository.FakeRmRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RmCalculatorViewModelTest: BaseViewModelTest() {
 
     private lateinit var sut: RmCalculatorViewModel
-    private lateinit var uiState: UiState<RmUiData>
+    private lateinit var fakeRepository: FakeRmRepository
     @Before
     fun setUp() {
-        uiState = spyk(UiState(RmUiData()))
-        sut = RmCalculatorViewModel(uiState)
+        fakeRepository = FakeRmRepository()
+        sut = RmCalculatorViewModel(rmRepository = fakeRepository)
     }
 
     @Test
-    fun getUiData() {
-    }
-
-    @Test
-    fun getRmSuccess() {
+    fun getRmSuccess() = runTest {
         val params = GetRM.Params("100", "8", Author.Brzycki, WeightUnit.Kg, false)
-
-        sut.getRm(params)
-
-        verify { uiState.update(any()) }
+        launchStateFlow {
+            fakeRepository.executeUseCase(params)
+            sut.data(params).collect()
+            Assert.assertNotEquals(RmUiData(), sut.data(params).value)
+        }
     }
     @Test
-    fun getRmFailure() {
+    fun getRmFailure() = runTest {
         val params = GetRM.Params("100---", "8---", Author.MCGlothin, WeightUnit.Kg, true)
-
-        sut.getRm(params)
-
-        verify { uiState.defaultState() }
+        launchStateFlow {
+            fakeRepository.executeUseCase(params)
+            sut.data(params).collect()
+            Assert.assertEquals(RmUiData(), sut.data(params).value)
+        }
     }
 }

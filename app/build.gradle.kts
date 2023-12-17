@@ -47,6 +47,7 @@ kapt { correctErrorTypes = true }
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":repository"))
     implementation(libs.appcompat)
     implementation(libs.material)
 

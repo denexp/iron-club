@@ -3,28 +3,34 @@ package com.denisdev.ironclub.rmCalculator
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denisdev.domain.usecases.rmcalculator.GetRM
-import com.denisdev.ironclub.base.UiState
-import kotlinx.coroutines.launch
+import com.denisdev.repository.RmRepository
+import com.denisdev.repository.RmRepositoryImpl
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class RmCalculatorViewModel(
-    val uiState: UiState<RmUiData> = UiState(RmUiData()),
-    private val rmUseCase: GetRM = GetRM(),
+    private var uiData: RmUiData = RmUiData(),
+    private val rmRepository: RmRepository = RmRepositoryImpl(
+        GetRM()
+    ),
 ): ViewModel() {
-    fun getRm(params: GetRM.Params) {
-        viewModelScope.launch {
-            val result = rmUseCase.execute(params)
-
-            if (result.isFailure) {
-                uiState.defaultState()
-                return@launch
-            }
-
-            uiState.update { uiData ->
-                uiData.copy(
-                    rm = result.getOrThrow().weight.value,
-                    author = result.getOrThrow().author
-                )
-            }
-        }
+    val data = { params: GetRM.Params ->
+        rmRepository.get(params)
+        .map {
+            uiData = uiData.copy(
+                rm = it.getOrThrow().weight.value,
+                author = it.getOrThrow().author
+            )
+            uiData
+        }.catch {
+            emit(uiData.copy(RmUiData.DEFAULT_RM))
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = uiData,
+        )
     }
 }
+
