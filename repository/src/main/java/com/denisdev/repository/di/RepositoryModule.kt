@@ -1,4 +1,4 @@
-package com.denisdev.ironclub.di
+package com.denisdev.repository.di
 
 import com.denisdev.domain.repository.AuthorRepository
 import com.denisdev.domain.repository.FormulaRepository
