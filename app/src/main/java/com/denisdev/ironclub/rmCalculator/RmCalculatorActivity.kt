@@ -46,10 +46,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.denisdev.domain.model.rm.author.Author
 import com.denisdev.domain.model.units.WeightUnit
-import com.denisdev.domain.usecases.rmcalculator.GetRmImpl
+import com.denisdev.domain.usecases.rmcalculator.GetRm
 import com.denisdev.domain.usecases.rmcalculator.GetRmImpl.Companion.CONSISTENT_RESULT_LIMIT
 import com.denisdev.ironclub.R
 import com.denisdev.ironclub.Utils.formatRound
@@ -60,7 +60,9 @@ import com.denisdev.ironclub.components.asResource
 import com.denisdev.ironclub.components.take
 import com.denisdev.ironclub.rmCalculator.RmUiData.Companion.DEFAULT_AUTHOR
 import com.denisdev.ironclub.rmCalculator.RmUiData.Companion.DEFAULT_WEIGHT_UNIT
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RmCalculatorActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,7 +86,7 @@ fun RMCalculatorPreview() {
 }
 
 @Composable
-fun RMCalculatorView(viewModel: RmCalculatorViewModel = viewModel<RmCalculatorViewModel>()) {
+fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel()) {
     val (weight, onWeight) = rememberSaveable { mutableStateOf("") }
     val (reps, onReps) = rememberSaveable { mutableStateOf("") }
     val (weightUnit, onUnit) = rememberSaveable { mutableStateOf(DEFAULT_WEIGHT_UNIT) }
