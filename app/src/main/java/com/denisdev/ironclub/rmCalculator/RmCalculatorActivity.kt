@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.denisdev.domain.model.rm.author.Author
 import com.denisdev.domain.model.units.WeightUnit
-import com.denisdev.domain.usecases.rmcalculator.GetRM
-import com.denisdev.domain.usecases.rmcalculator.GetRM.Companion.CONSISTENT_RESULT_LIMIT
+import com.denisdev.domain.usecases.rmcalculator.GetRmImpl
+import com.denisdev.domain.usecases.rmcalculator.GetRmImpl.Companion.CONSISTENT_RESULT_LIMIT
 import com.denisdev.ironclub.R
 import com.denisdev.ironclub.Utils.formatRound
 import com.denisdev.ironclub.base.AppTheme
@@ -91,7 +91,7 @@ fun RMCalculatorView(viewModel: RmCalculatorViewModel = viewModel<RmCalculatorVi
     val (author, onAuthor) = rememberSaveable { mutableStateOf(DEFAULT_AUTHOR) }
     val (autoFx, onAutoFx) = rememberSaveable { mutableStateOf(true) }
 
-    val data by viewModel.data(GetRM.Params(weight, reps, author, weightUnit, autoFx)).collectAsState()
+    val data by viewModel.data(GetRm.Params(weight, reps, author, weightUnit, autoFx)).collectAsState()
 
     if (autoFx)
         onAuthor(data.author)

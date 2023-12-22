@@ -26,7 +26,7 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.pressKey
 import com.denisdev.domain.model.rm.author.Author
 import com.denisdev.domain.model.units.WeightUnit
-import com.denisdev.domain.usecases.rmcalculator.GetRM
+import com.denisdev.domain.usecases.rmcalculator.GetRmImpl
 import com.denisdev.ironclub.R
 import com.denisdev.ironclub.assertExistText
 import com.denisdev.ironclub.emptyText
@@ -231,7 +231,7 @@ class RmCalculatorActivityTest {
             .performTextInput("20")
 
         with(composeTestRule.activity) {
-            composeTestRule.onNodeWithText(getString(R.string.less_reliable_results, GetRM.CONSISTENT_RESULT_LIMIT + 1))
+            composeTestRule.onNodeWithText(getString(R.string.less_reliable_results, GetRmImpl.CONSISTENT_RESULT_LIMIT + 1))
                 .assertExists()
         }
     }

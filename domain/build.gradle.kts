@@ -30,6 +30,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.coroutines)
     testImplementation(libs.junit)
     testImplementation(libs.testCoroutines)
     testImplementation(libs.mockk)
