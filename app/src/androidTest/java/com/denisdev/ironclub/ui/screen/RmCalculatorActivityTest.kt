@@ -1,5 +1,7 @@
 package com.denisdev.ironclub.ui.screen
 
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
@@ -10,6 +12,7 @@ import androidx.compose.ui.test.assertIsToggleable
 import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.isNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -17,10 +20,13 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
+import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.pressKey
 import com.denisdev.domain.model.rm.author.Author
 import com.denisdev.domain.model.units.WeightUnit
-import com.denisdev.domain.usecases.rmcalculator.GetRM
+import com.denisdev.domain.usecases.rmcalculator.GetRmImpl
 import com.denisdev.ironclub.R
 import com.denisdev.ironclub.assertExistText
 import com.denisdev.ironclub.emptyText
@@ -79,6 +85,18 @@ class RmCalculatorActivityTest {
                 getString(R.string.unit),
                 getString(R.string.auto_fx)
             )
+        }
+    }
+    @Test
+    fun textFieldImeNextTextField() {
+        with(composeTestRule.activity) {
+            composeTestRule.onNodeWithText(getString(R.string.weight))
+                .performClick()
+                .assertIsFocused()
+                .performImeAction()
+
+            composeTestRule.onNodeWithText(getString(R.string.reps))
+                .assertIsFocused()
         }
     }
 
@@ -213,13 +231,13 @@ class RmCalculatorActivityTest {
             .performTextInput("20")
 
         with(composeTestRule.activity) {
-            composeTestRule.onNodeWithText(getString(R.string.less_reliable_results, GetRM.CONSISTENT_RESULT_LIMIT + 1))
+            composeTestRule.onNodeWithText(getString(R.string.less_reliable_results, GetRmImpl.CONSISTENT_RESULT_LIMIT + 1))
                 .assertExists()
         }
     }
 
     @Test
-    fun clearTextFields() {
+    fun clearTextFieldsClearRm() {
         composeTestRule.onNodeWithTag("WeightTextField")
             .performTextInput("100")
         composeTestRule.onNodeWithTag("RepsTextField")
@@ -240,6 +258,26 @@ class RmCalculatorActivityTest {
 
         composeTestRule.onNodeWithTag("RepsTextField")
             .assert(emptyText())
+
+        composeTestRule.onNodeWithTag("RM")
+            .assert(hasTextExactly("0"))
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun setTextFieldsImeBackspaceClearRm() {
+        composeTestRule.onNodeWithTag("WeightTextField")
+            .performTextInput("100")
+        composeTestRule.onNodeWithTag("RepsTextField")
+            .apply {
+                performTextInput("20")
+                performKeyInput {
+                    pressKey(Key.Backspace)
+                    pressKey(Key.Backspace)
+                }
+            }.assert(emptyText())
+        composeTestRule.onNodeWithTag("RM")
+            .assert(hasTextExactly("0"))
     }
 }
 

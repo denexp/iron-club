@@ -1,46 +1,56 @@
 package com.denisdev.ironclub.rmCalculator.viewmodel
 
+import com.denisdev.domain.model.rm.RM
 import com.denisdev.domain.model.rm.author.Author
+import com.denisdev.domain.model.units.Weight
 import com.denisdev.domain.model.units.WeightUnit
-import com.denisdev.domain.usecases.rmcalculator.GetRM
-import com.denisdev.ironclub.base.UiState
+import com.denisdev.domain.usecases.rmcalculator.GetRm
+import com.denisdev.domain.usecases.rmcalculator.GetRmImpl
 import com.denisdev.ironclub.rmCalculator.RmCalculatorViewModel
 import com.denisdev.ironclub.rmCalculator.RmUiData
 import com.denisdev.ironclub.rmCalculator.base.BaseViewModelTest
-import io.mockk.spyk
+import io.mockk.coEvery
+import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class RmCalculatorViewModelTest: BaseViewModelTest() {
 
     private lateinit var sut: RmCalculatorViewModel
-    private lateinit var uiState: UiState<RmUiData>
+    private lateinit var useCase: GetRm
     @Before
     fun setUp() {
-        uiState = spyk(UiState(RmUiData()))
-        sut = RmCalculatorViewModel(uiState)
+        useCase = mockk()
+        sut = RmCalculatorViewModel(rmUseCase = useCase)
     }
 
     @Test
-    fun getUiData() {
+    fun getRmSuccess() = runTest {
+        val params = GetRm.Params("100", "8", Author.Brzycki, WeightUnit.Kg, false)
+        coEvery { useCase(params) } returns flow { emit(Result.success(RM(Author.Brzycki, Weight(2f, WeightUnit.Kg)))) }
+
+        sut.data(params).produceIn(this).test {
+            Assert.assertNotEquals(RmUiData(), it)
+            verify { useCase(params) }
+        }
     }
 
     @Test
-    fun getRmSuccess() {
-        val params = GetRM.Params("100", "8", Author.Brzycki, WeightUnit.Kg, false)
+    fun getRmFailure() = runTest {
+        val params = GetRm.Params("100---", "8---", Author.MCGlothin, WeightUnit.Kg, true)
+        coEvery { useCase(params) } returns flow { emit(Result.failure(mockk())) }
 
-        runTest { sut.getRm(params) }
-
-        verify { uiState.update(any()) }
-    }
-    @Test
-    fun getRmFailure() {
-        val params = GetRM.Params("100---", "8---", Author.MCGlothin, WeightUnit.Kg, true)
-
-        runTest { sut.getRm(params) }
-
-        verify(exactly = 0) { uiState.update(any()) }
+        sut.data(params).produceIn(this).test {
+            Assert.assertEquals(RmUiData(), it)
+            verify { useCase(params) }
+        }
     }
 }
