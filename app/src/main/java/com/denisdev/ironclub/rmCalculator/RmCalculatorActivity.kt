@@ -47,7 +47,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.denisdev.domain.model.rm.RM
 import com.denisdev.domain.model.rm.author.Author
+import com.denisdev.domain.model.units.Weight
 import com.denisdev.domain.model.units.WeightUnit
 import com.denisdev.domain.usecases.rmcalculator.GetRm
 import com.denisdev.domain.usecases.rmcalculator.GetRmImpl.Companion.CONSISTENT_RESULT_LIMIT
@@ -61,6 +63,8 @@ import com.denisdev.ironclub.components.take
 import com.denisdev.ironclub.rmCalculator.RmUiData.Companion.DEFAULT_AUTHOR
 import com.denisdev.ironclub.rmCalculator.RmUiData.Companion.DEFAULT_WEIGHT_UNIT
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 @AndroidEntryPoint
 class RmCalculatorActivity : BaseActivity() {
@@ -80,8 +84,13 @@ class RmCalculatorActivity : BaseActivity() {
 @Preview(device = "spec:width=411dp,height=891dp", showSystemUi = true)
 @Composable
 fun RMCalculatorPreview() {
+    val previewViewModel = RmCalculatorViewModel(RmUiData(), object: GetRm {
+        override fun invoke(params: GetRm.Params?): Flow<Result<RM>> {
+            return flow { emit(runCatching { RM(Author.Brzycki, Weight(0f, WeightUnit.Kg)) }) }
+        }
+    })
     AppTheme {
-        RMCalculatorView()
+        RMCalculatorView(previewViewModel)
     }
 }
 
