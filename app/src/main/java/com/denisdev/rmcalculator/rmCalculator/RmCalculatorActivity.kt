@@ -29,13 +29,18 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +70,7 @@ import com.denisdev.rmcalculator.rmCalculator.RmUiData.Companion.DEFAULT_WEIGHT_
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.job
 
 @AndroidEntryPoint
 class RmCalculatorActivity : BaseActivity() {
@@ -102,6 +108,8 @@ fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel()) {
     val (author, onAuthor) = rememberSaveable { mutableStateOf(DEFAULT_AUTHOR) }
     val (autoFx, onAutoFx) = rememberSaveable { mutableStateOf(true) }
 
+    val focusRequester = remember { FocusRequester() }
+
     val data by viewModel.data(GetRm.Params(weight, reps, author, weightUnit, autoFx)).collectAsState()
 
     if (autoFx)
@@ -109,7 +117,7 @@ fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel()) {
 
     Column(modifier = Modifier
         .background(color = MaterialTheme.colorScheme.background)
-        .padding(20.dp)
+        .padding(start = 12.dp, end = 12.dp, bottom = 8.dp, top = 4.dp)
         .fillMaxSize()) {
         Column(
             Modifier
@@ -131,6 +139,7 @@ fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel()) {
             Modifier
                 .imePadding()
                 .fillMaxWidth(),
+            focusRequester,
             weight to onWeight,
             reps to onReps,
             weightUnit to onUnit,
@@ -179,6 +188,7 @@ private fun PercentItem(percent: String, nRm: String) {
 
 @Composable
 private fun InputFormSection(modifier: Modifier = Modifier,
+                             focusRequester: FocusRequester,
                              weight: Pair<String, (String) -> Unit>,
                              reps: Pair<String, (String) -> Unit>,
                              weightUnit: Pair<WeightUnit, (WeightUnit) -> Unit>,
@@ -191,6 +201,7 @@ private fun InputFormSection(modifier: Modifier = Modifier,
             OutlinedTextField(value = weight.first, label = {
                 Text(text = R.string.weight.asResource(), style = TextStyle(fontSize = 20.sp))
             }, onValueChange = weight.second, modifier = Modifier
+                .focusRequester(focusRequester)
                 .weight(0.6f)
                 .testTag("WeightTextField"),
                 keyboardOptions = KeyboardOptions(
@@ -227,11 +238,12 @@ private fun InputFormSection(modifier: Modifier = Modifier,
             )
         }
         if ((reps.first.toIntOrNull() ?: 0) > CONSISTENT_RESULT_LIMIT)
-            Text(modifier = Modifier.fillMaxWidth(),
+            Text(modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 text = R.string.less_reliable_results.asResource(CONSISTENT_RESULT_LIMIT + 1),
                 style = TextStyle(fontSize = 14.sp),
                 color = MaterialTheme.colorScheme.primary, textAlign = TextAlign.End)
     }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 }
 
 
@@ -290,6 +302,5 @@ private fun MoreOptionsSection(weightUnit: Pair<WeightUnit, (WeightUnit) -> Unit
                 R.string.unit.asResource()
             )
         }
-
     }
 }
