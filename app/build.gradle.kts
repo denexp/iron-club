@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import java.util.Properties
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.androidApplication)
@@ -5,6 +8,23 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.googleServices)
     id("kotlin-kapt")
+}
+
+val majorVersion = 1
+val minorVersion = 0
+val patchVersion = 0
+
+fun versionComposition() = listOf(majorVersion, minorVersion, patchVersion)
+fun versionName() = versionComposition().joinToString(".")
+fun versionCode() = versionComposition().joinToString("").toInt()
+
+android.applicationVariants.all {
+    outputs.forEach { output ->
+        if (output is BaseVariantOutputImpl) {
+            output.outputFileName =
+                "RmCalculator-${name}-${versionName}.${output.outputFile.extension}"
+        }
+    }
 }
 
 android {
@@ -15,29 +35,49 @@ android {
         applicationId = "com.denisdev.rmcalculator"
         minSdk = 29
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
-
+        versionCode = versionCode()
+        versionName = versionName()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
-        // Enables Jetpack Compose for this module
         compose = true
         viewBinding = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
     }
+
+    val propertiesFile = rootProject.file("secrets.properties")
+    val properties = Properties().apply { load(propertiesFile.inputStream()) }
+
+    signingConfigs {
+        maybeCreate("release").apply {
+            //Properties from local.properties
+            storePassword = properties["STOREPASSWORD"].toString()
+            keyPassword = properties["KEYPASSWORD"].toString()
+            keyAlias = properties["KEYALIAS"].toString()
+            storeFile = file(properties["KEYSTOREPATH"].toString())
+        }
+    }
+
     buildTypes {
+        debug {
+            isDebuggable = true
+        }
         release {
-            isMinifyEnabled = false
+            signingConfig = signingConfigs["release"]
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
     testOptions.unitTests.isIncludeAndroidResources = true
     testOptions.animationsDisabled = true
     

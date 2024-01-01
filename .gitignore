@@ -10,5 +10,9 @@
 local.properties
 
 app/build
+app/release
 repository/build
 domain/build
+
+secrets.properties
+*.jks
