@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Calculadora Rm</string>
     <string name="weight">Peso</string>
     <string name="reps">Repes</string>
     <string name="more_options">Más opciones</string>
