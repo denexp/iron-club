@@ -3,20 +3,17 @@ package com.denisdev.ironclub.rmCalculator
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.denisdev.domain.usecases.rmcalculator.GetRm
-import com.denisdev.domain.usecases.rmcalculator.GetRmImpl
-import com.denisdev.repository.AuthorRepositoryImpl
-import com.denisdev.repository.FormulaRepositoryImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class RmCalculatorViewModel(
-    private var uiData: RmUiData = RmUiData(),
-    private val rmUseCase: GetRm = GetRmImpl(
-        AuthorRepositoryImpl(),
-        FormulaRepositoryImpl(),
-    ),
+@HiltViewModel
+class RmCalculatorViewModel @Inject constructor(
+    private var uiData: RmUiData,
+    private val rmUseCase: GetRm,
 ): ViewModel() {
     val data = { params: GetRm.Params ->
         rmUseCase(params)

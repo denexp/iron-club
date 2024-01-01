@@ -5,7 +5,6 @@ import com.denisdev.domain.model.rm.author.Author
 import com.denisdev.domain.model.units.Weight
 import com.denisdev.domain.model.units.WeightUnit
 import com.denisdev.domain.usecases.rmcalculator.GetRm
-import com.denisdev.domain.usecases.rmcalculator.GetRmImpl
 import com.denisdev.ironclub.rmCalculator.RmCalculatorViewModel
 import com.denisdev.ironclub.rmCalculator.RmUiData
 import com.denisdev.ironclub.rmCalculator.base.BaseViewModelTest
@@ -29,7 +28,7 @@ class RmCalculatorViewModelTest: BaseViewModelTest() {
     @Before
     fun setUp() {
         useCase = mockk()
-        sut = RmCalculatorViewModel(rmUseCase = useCase)
+        sut = RmCalculatorViewModel(RmUiData(), useCase)
     }
 
     @Test

@@ -38,6 +38,8 @@ android {
         }
     }
     testOptions.unitTests.isIncludeAndroidResources = true
+    testOptions.animationsDisabled = true
+    
     kotlin {
         jvmToolchain(17)
     }

@@ -11,6 +11,7 @@ import com.denisdev.domain.usecases.UseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
 interface GetRm: UseCase<GetRm.Params, Flow<Result<RM>>> {
     data class Params(val weight: String,
@@ -21,7 +22,7 @@ interface GetRm: UseCase<GetRm.Params, Flow<Result<RM>>> {
     )
 }
 
-class GetRmImpl(
+class GetRmImpl @Inject constructor(
     private val authorRepository: AuthorRepository,
     private val formulaRepository: FormulaRepository
 ): GetRm {
