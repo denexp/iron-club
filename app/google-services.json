@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1022396832530",
+    "project_id": "rm-calculator-7e801",
+    "storage_bucket": "rm-calculator-7e801.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022396832530:android:ccd4195090342e53f771cb",
+        "android_client_info": {
+          "package_name": "com.denisdev.rmcalculator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoOcpfEdg23g5RdooWK4srsMyIAY0b4as"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

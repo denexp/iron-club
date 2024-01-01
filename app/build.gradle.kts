@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.googleServices)
     id("kotlin-kapt")
 }
 
@@ -50,6 +51,10 @@ kapt { correctErrorTypes = true }
 dependencies {
     implementation(project(":domain"))
     implementation(project(":repository"))
+
+    implementation(platform(libs.firebaseBOM))
+    implementation(libs.firebaseAnalytics)
+
     implementation(libs.appcompat)
     implementation(libs.material)
 
