@@ -45,6 +45,9 @@ class RmCalculatorActivityTest {
     fun initState() {
         composeTestRule.assertExistText("0", DEFAULT_WEIGHT_UNIT.name)
 
+        composeTestRule.onNodeWithTag("WeightTextField")
+            .assertIsFocused()
+
         composeTestRule.onNodeWithTag("MoreOptionsDropDowns")
             .assertDoesNotExist()
         composeTestRule.onNodeWithTag("MoreOptionsButton")
