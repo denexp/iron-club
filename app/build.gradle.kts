@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.denisdev.ironclub"
+    namespace = "com.denisdev.rmcalculator"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.denisdev.ironclub"
+        applicationId = "com.denisdev.rmcalculator"
         minSdk = 29
         targetSdk = 34
         versionCode = 1

@@ -12,7 +12,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "IronClub"
+rootProject.name = "RmCalculator"
 include(":app")
 include(":repository")
 include(":domain")
