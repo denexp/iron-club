@@ -2,6 +2,7 @@
 agp = "8.2.0"
 kotlin = "1.8.10"
 googleServicesVersion = "4.4.0"
+firebaseCrashlyticsVersion = "2.9.9"
 hilt = "2.44"
 core-ktx = "1.12.0"
 junit = "4.13.2"
@@ -41,7 +42,7 @@ composeTest = { group = "androidx.compose.ui", name = "ui-test-junit4", version.
 composeTestRule = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "composeVersion" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 firebaseBOM = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBOMVersion" }
-firebaseAnalytics = { group = "com.google.firebase", name = "firebase-analytics"}
+firebaseCrashlytics = { group = "com.google.firebase", name = "firebase-crashlytics"}
 
 [bundles]
 compose = ["composeMaterialIconsCore", "composeMaterialIconsExtended", "composeUiTooling", "composeMaterial", "composeActivity", "composeViewModel", "composeHilt"]
@@ -54,3 +55,4 @@ kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServicesVersion" }
+firebaseCrashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsVersion" }

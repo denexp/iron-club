@@ -2,10 +2,12 @@
 <resources>
     <string name="app_name">Calculadora Rm</string>
     <string name="weight">Peso</string>
+    <string name="description_weight_clear_button">Boton limpiar peso</string>
     <string name="reps">Repes</string>
+    <string name="description_reps_clear_button">Boton limpiar repeticiones</string>
     <string name="more_options">Más opciones</string>
     <string name="auto_fx">Auto-f(x)</string>
-    <string name="formula">Formula</string>
+    <string name="formula">Fórmula</string>
     <string name="unit">Unidad</string>
     <string name="less_reliable_results">Desde %1$d repeticiones hay menos fiabilidad</string>
 </resources>

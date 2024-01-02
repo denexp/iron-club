@@ -11,6 +11,8 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertIsToggleable
 import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasParent
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.hasTextExactly
 import androidx.compose.ui.test.isNotEnabled
@@ -246,7 +248,8 @@ class RmCalculatorActivityTest {
         composeTestRule.onNodeWithTag("RepsTextField")
             .performTextInput("20")
 
-        composeTestRule.onNodeWithTag("WeightClearButton")
+        composeTestRule.onAllNodesWithTag("ClearButton")
+            .filterToOne(hasParent(hasTestTag("WeightTextField")))
             .assertExists()
             .performClick()
             .assertDoesNotExist()
@@ -254,7 +257,8 @@ class RmCalculatorActivityTest {
         composeTestRule.onNodeWithTag("WeightTextField")
             .assert(emptyText())
 
-        composeTestRule.onNodeWithTag("RepsClearButton")
+        composeTestRule.onAllNodesWithTag("ClearButton")
+            .filterToOne(hasParent(hasTestTag("RepsTextField")))
             .assertExists()
             .performClick()
             .assertDoesNotExist()
@@ -283,5 +287,3 @@ class RmCalculatorActivityTest {
             .assert(hasTextExactly("0"))
     }
 }
-
-

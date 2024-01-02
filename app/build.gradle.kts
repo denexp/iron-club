@@ -7,12 +7,13 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.hilt)
     alias(libs.plugins.googleServices)
+    alias(libs.plugins.firebaseCrashlytics)
     id("kotlin-kapt")
 }
 
 val majorVersion = 1
 val minorVersion = 0
-val patchVersion = 0
+val patchVersion = 100
 
 fun versionComposition() = listOf(majorVersion, minorVersion, patchVersion)
 fun versionName() = versionComposition().joinToString(".")
@@ -93,7 +94,7 @@ dependencies {
     implementation(project(":repository"))
 
     implementation(platform(libs.firebaseBOM))
-    implementation(libs.firebaseAnalytics)
+    implementation(libs.firebaseCrashlytics)
 
     implementation(libs.appcompat)
     implementation(libs.material)

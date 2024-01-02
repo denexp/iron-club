@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -37,10 +38,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -70,7 +71,6 @@ import com.denisdev.rmcalculator.rmCalculator.RmUiData.Companion.DEFAULT_WEIGHT_
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.job
 
 @AndroidEntryPoint
 class RmCalculatorActivity : BaseActivity() {
@@ -100,6 +100,7 @@ fun RMCalculatorPreview() {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel()) {
     val (weight, onWeight) = rememberSaveable { mutableStateOf("") }
@@ -108,8 +109,7 @@ fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel()) {
     val (author, onAuthor) = rememberSaveable { mutableStateOf(DEFAULT_AUTHOR) }
     val (autoFx, onAutoFx) = rememberSaveable { mutableStateOf(true) }
 
-    val focusRequester = remember { FocusRequester() }
-
+    val (weightRequester, repsRequester) = remember { FocusRequester.createRefs() }
     val data by viewModel.data(GetRm.Params(weight, reps, author, weightUnit, autoFx)).collectAsState()
 
     if (autoFx)
@@ -139,7 +139,8 @@ fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel()) {
             Modifier
                 .imePadding()
                 .fillMaxWidth(),
-            focusRequester,
+            weightRequester,
+            repsRequester,
             weight to onWeight,
             reps to onReps,
             weightUnit to onUnit,
@@ -188,7 +189,8 @@ private fun PercentItem(percent: String, nRm: String) {
 
 @Composable
 private fun InputFormSection(modifier: Modifier = Modifier,
-                             focusRequester: FocusRequester,
+                             weightRequester: FocusRequester,
+                             repsRequester: FocusRequester,
                              weight: Pair<String, (String) -> Unit>,
                              reps: Pair<String, (String) -> Unit>,
                              weightUnit: Pair<WeightUnit, (WeightUnit) -> Unit>,
@@ -198,42 +200,26 @@ private fun InputFormSection(modifier: Modifier = Modifier,
     Column(modifier, verticalArrangement = Arrangement.Bottom) {
         MoreOptionsSection(weightUnit, author, autoFx, false)
         Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
-            OutlinedTextField(value = weight.first, label = {
-                Text(text = R.string.weight.asResource(), style = TextStyle(fontSize = 20.sp))
-            }, onValueChange = weight.second, modifier = Modifier
-                .focusRequester(focusRequester)
-                .weight(0.6f)
-                .testTag("WeightTextField"),
-                keyboardOptions = KeyboardOptions(
+            RmTextField(this, R.string.weight.asResource(), weight, 0.6f,
+                KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
                 ),
-                singleLine = true,
-                trailingIcon = weight.first.isNotEmpty().take {
-                    Icon(Icons.Rounded.Clear, null, modifier = Modifier
-                        .clickable {
-                            weight.second(String())
-                        }
-                        .testTag("WeightClearButton"))
+                weightRequester,
+                "WeightTextField",
+                weight.first.isNotEmpty().take {
+                    ClearButton(weight.second, R.string.description_weight_clear_button.asResource())
                 }
             )
-            OutlinedTextField(value = reps.first, label = {
-                Text(text = R.string.reps.asResource(), style = TextStyle(fontSize = 20.sp),
-                    overflow = TextOverflow.Ellipsis, maxLines = 1)
-            }, onValueChange = reps.second, modifier = Modifier
-                .weight(0.4f)
-                .testTag("RepsTextField"),
-                keyboardOptions = KeyboardOptions(
+            RmTextField(this, R.string.reps.asResource(), reps, 0.4f,
+                KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 ),
-                singleLine = true,
-                trailingIcon = reps.first.isNotEmpty().take {
-                    Icon(Icons.Rounded.Clear, null, modifier = Modifier
-                        .clickable {
-                            reps.second(String())
-                        }
-                        .testTag("RepsClearButton"))
+                repsRequester,
+                "RepsTextField",
+                reps.first.isNotEmpty().take {
+                    ClearButton(reps.second, R.string.description_reps_clear_button.asResource())
                 }
             )
         }
@@ -243,7 +229,44 @@ private fun InputFormSection(modifier: Modifier = Modifier,
                 style = TextStyle(fontSize = 14.sp),
                 color = MaterialTheme.colorScheme.primary, textAlign = TextAlign.End)
     }
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+    LaunchedEffect(Unit) { weightRequester.requestFocus() }
+}
+
+@Composable
+private fun RmTextField(scope: RowScope, label: String, pair: Pair<String, (String) -> Unit>, weight: Float,
+                        keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+                        focusRequester: FocusRequester,
+                        testTag: String,
+                        trailingIcon: @Composable (() -> Unit)? = null) {
+    with(scope) {
+        OutlinedTextField(value = pair.first, label = {
+            Text(
+                text = label, style = TextStyle(fontSize = 20.sp),
+                overflow = TextOverflow.Ellipsis, maxLines = 1
+            )
+        }, onValueChange = pair.second, modifier = Modifier
+            .focusRequester(focusRequester)
+            .weight(weight)
+            .testTag(testTag),
+            keyboardOptions = keyboardOptions,
+            singleLine = true,
+            trailingIcon = trailingIcon
+        )
+    }
+}
+
+@Composable
+private fun ClearButton(
+    action: (String) -> Unit,
+    description: String
+) {
+    Icon(Icons.Rounded.Clear,
+        description,
+        modifier = Modifier
+            .clickable {
+                action(String())
+            }
+            .testTag("ClearButton"))
 }
 
 
