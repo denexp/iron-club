@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -144,7 +145,8 @@ fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel(), orienta
             InputFormSection(
                 Modifier
                     .weight(1f)
-                    .imePadding(),
+                    .imePadding()
+                    .fillMaxHeight(),
                 weightRequester,
                 repsRequester,
                 weight to onWeight,
@@ -254,7 +256,7 @@ private fun InputFormSection(modifier: Modifier = Modifier,
                              author: Pair<Author, (Author) -> Unit>,
                              autoFx: Pair<Boolean, (Boolean) -> Unit>
 ) {
-    Column(modifier, verticalArrangement = Arrangement.Bottom) {
+    Column(modifier, verticalArrangement = Arrangement.Top) {
         MoreOptionsSection(weightUnit, author, autoFx, false)
         Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
             RmTextField(this, R.string.weight.asResource(), weight, 0.6f,
