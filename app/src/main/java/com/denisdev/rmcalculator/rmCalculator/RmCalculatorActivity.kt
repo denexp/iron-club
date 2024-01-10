@@ -1,5 +1,6 @@
 package com.denisdev.rmcalculator.rmCalculator
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
@@ -7,10 +8,12 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -42,6 +45,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -99,10 +103,22 @@ fun RMCalculatorPreview() {
         RMCalculatorView(previewViewModel)
     }
 }
+@Preview(device = "spec:width=411dp,height=891dp,orientation=landscape", showSystemUi = true)
+@Composable
+fun RMCalculatorPreviewLandscape() {
+    val previewViewModel = RmCalculatorViewModel(RmUiData(), object: GetRm {
+        override fun invoke(params: GetRm.Params?): Flow<Result<RM>> {
+            return flow { emit(runCatching { RM(Author.Brzycki, Weight(0f, WeightUnit.Kg)) }) }
+        }
+    })
+    AppTheme {
+        RMCalculatorView(previewViewModel, Configuration.ORIENTATION_LANDSCAPE)
+    }
+}
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel()) {
+fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel(), orientation: Int = LocalConfiguration.current.orientation) {
     val (weight, onWeight) = rememberSaveable { mutableStateOf("") }
     val (reps, onReps) = rememberSaveable { mutableStateOf("") }
     val (weightUnit, onUnit) = rememberSaveable { mutableStateOf(DEFAULT_WEIGHT_UNIT) }
@@ -115,38 +131,81 @@ fun RMCalculatorView(viewModel: RmCalculatorViewModel = hiltViewModel()) {
     if (autoFx)
         onAuthor(data.author)
 
-    Column(modifier = Modifier
-        .background(color = MaterialTheme.colorScheme.background)
-        .padding(start = 12.dp, end = 12.dp, bottom = 8.dp, top = 4.dp)
-        .fillMaxSize()) {
-        Column(
-            Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())) {
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-                Text(text = data.rm.formatRound(), style = TextStyle(fontSize = 70.sp, fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.testTag("RM"))
-                Text(text = weightUnit.name, style = TextStyle(fontSize = 30.sp),
-                    color = MaterialTheme.colorScheme.onBackground)
+    if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        Row(modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.background)
+            .padding(start = 12.dp, end = 12.dp, bottom = 8.dp, top = 4.dp)
+            .fillMaxSize(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Box(modifier = Modifier
+                .weight(1f)) {
+                RMSection(data.rm, weightUnit)
             }
-            if (data.rm > 0)
-                Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                    PercentList(data.rm)
-                }
-        }
 
-        InputFormSection(
-            Modifier
-                .imePadding()
-                .fillMaxWidth(),
-            weightRequester,
-            repsRequester,
-            weight to onWeight,
-            reps to onReps,
-            weightUnit to onUnit,
-            author to onAuthor,
-            autoFx to onAutoFx
-        )
+            InputFormSection(
+                Modifier
+                    .weight(1f)
+                    .imePadding()
+                    .fillMaxHeight(),
+                weightRequester,
+                repsRequester,
+                weight to onWeight,
+                reps to onReps,
+                weightUnit to onUnit,
+                author to onAuthor,
+                autoFx to onAutoFx
+            )
+        }
+    } else {
+        Column(modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.background)
+            .padding(start = 12.dp, end = 12.dp, bottom = 8.dp, top = 4.dp)
+            .fillMaxSize()) {
+            Box(modifier = Modifier
+                .weight(1f)) {
+                RMSection(data.rm, weightUnit)
+            }
+
+            InputFormSection(
+                Modifier
+                    .imePadding(),
+                weightRequester,
+                repsRequester,
+                weight to onWeight,
+                reps to onReps,
+                weightUnit to onUnit,
+                author to onAuthor,
+                autoFx to onAutoFx
+            )
+        }
+    }
+}
+
+@Composable
+private fun RMSection(
+    rm: Float,
+    weightUnit: WeightUnit
+) {
+    Column(
+        Modifier
+            .verticalScroll(rememberScrollState())
+    ) {
+        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = rm.formatRound(),
+                style = TextStyle(fontSize = 70.sp, fontWeight = FontWeight.Bold),
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.testTag("RM")
+            )
+            Text(
+                text = weightUnit.name, style = TextStyle(fontSize = 30.sp),
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+        if (rm > 0)
+            Column(modifier = Modifier.padding(vertical = 4.dp)) {
+                PercentList(rm)
+            }
     }
 }
 
@@ -197,7 +256,7 @@ private fun InputFormSection(modifier: Modifier = Modifier,
                              author: Pair<Author, (Author) -> Unit>,
                              autoFx: Pair<Boolean, (Boolean) -> Unit>
 ) {
-    Column(modifier, verticalArrangement = Arrangement.Bottom) {
+    Column(modifier, verticalArrangement = Arrangement.Top) {
         MoreOptionsSection(weightUnit, author, autoFx, false)
         Row(modifier = Modifier, horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
             RmTextField(this, R.string.weight.asResource(), weight, 0.6f,
@@ -224,7 +283,9 @@ private fun InputFormSection(modifier: Modifier = Modifier,
             )
         }
         if ((reps.first.toIntOrNull() ?: 0) > CONSISTENT_RESULT_LIMIT)
-            Text(modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+            Text(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
                 text = R.string.less_reliable_results.asResource(CONSISTENT_RESULT_LIMIT + 1),
                 style = TextStyle(fontSize = 14.sp),
                 color = MaterialTheme.colorScheme.primary, textAlign = TextAlign.End)
