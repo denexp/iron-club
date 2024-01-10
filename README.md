@@ -4,22 +4,6 @@ Welcome to the Rm calculator app for Android!
 
 This is an open source Android app developed by Denis Menéndez. The source code is available on GitHub under the MIT license; the app is also available on Google Play.
 
-### Set up
-
-In order to be able to compile the project the following actions are required:
-
-- Create a file located at root project called "secrets.properties" as expected in `build.gradle.kts` file,
-
-  the list of properties required by the app:
-
-  "STOREPASSWORD",
-  "KEYPASSWORD",
-  "KEYALIAS",
-  "KEYSTOREPATH"
-
-- Create a keystore file located at KEYSTOREPATH
-
-
 ## How to install?
 
 

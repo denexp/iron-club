@@ -13,7 +13,7 @@ plugins {
 
 val majorVersion = 1
 val minorVersion = 0
-val patchVersion = 100
+val patchVersion = 101
 
 fun versionComposition() = listOf(majorVersion, minorVersion, patchVersion)
 fun versionName() = versionComposition().joinToString(".")
@@ -50,25 +50,11 @@ android {
         kotlinCompilerExtensionVersion = "1.4.3"
     }
 
-    val propertiesFile = rootProject.file("secrets.properties")
-    val properties = Properties().apply { load(propertiesFile.inputStream()) }
-
-    signingConfigs {
-        maybeCreate("release").apply {
-            //Properties from local.properties
-            storePassword = properties["STOREPASSWORD"].toString()
-            keyPassword = properties["KEYPASSWORD"].toString()
-            keyAlias = properties["KEYALIAS"].toString()
-            storeFile = file(properties["KEYSTOREPATH"].toString())
-        }
-    }
-
     buildTypes {
         debug {
             isDebuggable = true
         }
         release {
-            signingConfig = signingConfigs["release"]
             isDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = true
