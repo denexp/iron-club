@@ -13,7 +13,7 @@ plugins {
 
 val majorVersion = 1
 val minorVersion = 0
-val patchVersion = 100
+val patchVersion = 101
 
 fun versionComposition() = listOf(majorVersion, minorVersion, patchVersion)
 fun versionName() = versionComposition().joinToString(".")
