@@ -2,9 +2,9 @@
 <resources>
     <string name="app_name">Rm Calculator</string>
     <string name="weight">Weight</string>
-    <string name="description_weight_clear_button">Weight clear button</string>
+    <string name="description_weight_clear_button">Clear weight</string>
     <string name="reps">Reps</string>
-    <string name="description_reps_clear_button">Reps clear button</string>
+    <string name="description_reps_clear_button">Clear reps</string>
     <string name="more_options">More options</string>
     <string name="auto_fx">Auto-f(x)</string>
     <string name="formula">Formula</string>
