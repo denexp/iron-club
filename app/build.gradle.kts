@@ -50,25 +50,11 @@ android {
         kotlinCompilerExtensionVersion = "1.4.3"
     }
 
-    val propertiesFile = rootProject.file("secrets.properties")
-    val properties = Properties().apply { load(propertiesFile.inputStream()) }
-
-    signingConfigs {
-        maybeCreate("release").apply {
-            //Properties from local.properties
-            storePassword = properties["STOREPASSWORD"].toString()
-            keyPassword = properties["KEYPASSWORD"].toString()
-            keyAlias = properties["KEYALIAS"].toString()
-            storeFile = file(properties["KEYSTOREPATH"].toString())
-        }
-    }
-
     buildTypes {
         debug {
             isDebuggable = true
         }
         release {
-            signingConfig = signingConfigs["release"]
             isDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = true
