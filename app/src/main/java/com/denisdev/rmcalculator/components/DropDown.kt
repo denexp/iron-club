@@ -1,6 +1,7 @@
 package com.denisdev.rmcalculator.components
 
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.DropdownMenuItem
@@ -48,6 +49,7 @@ fun DropDown(
         OutlinedTextField(
             modifier = Modifier.testTag("DropDownField")
                 .focusable(false)
+                .fillMaxWidth()
                 .menuAnchor(),
             enabled = enabled,
             readOnly = true,

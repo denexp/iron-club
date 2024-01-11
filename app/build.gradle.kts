@@ -1,5 +1,4 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
-import java.util.Properties
 
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
@@ -13,7 +12,7 @@ plugins {
 
 val majorVersion = 1
 val minorVersion = 0
-val patchVersion = 101
+val patchVersion = 102
 
 fun versionComposition() = listOf(majorVersion, minorVersion, patchVersion)
 fun versionName() = versionComposition().joinToString(".")

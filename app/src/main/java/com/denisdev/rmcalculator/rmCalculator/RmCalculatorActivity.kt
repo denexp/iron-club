@@ -362,8 +362,7 @@ private fun MoreOptionsSection(weightUnit: Pair<WeightUnit, (WeightUnit) -> Unit
             DropDown(
                 Modifier
                     .weight(0.7f)
-                    .padding(vertical = 12.dp)
-                    .wrapContentWidth(),
+                    .padding(vertical = 12.dp),
                 !autoFx.first,
                 TextStyle(fontSize = 20.sp),
                 false,
